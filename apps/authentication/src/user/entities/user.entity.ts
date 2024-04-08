@@ -14,9 +14,9 @@ export class User {
   @Column({ type: 'timestamp' })
   birth_date: Date;
 
-  @Column({ type: 'varchar', length: 40 })
-  email: string;
-
   @Column({ type: 'varchar', length: 10 })
   phone_number: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  address: string;
 }
