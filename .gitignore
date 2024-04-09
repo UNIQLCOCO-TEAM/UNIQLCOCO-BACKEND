@@ -33,3 +33,12 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# env file
+.env
+db.config.ts
+
+# Image folder
+/**/*.png
+/**/*.jpg
+/**/*.jpeg

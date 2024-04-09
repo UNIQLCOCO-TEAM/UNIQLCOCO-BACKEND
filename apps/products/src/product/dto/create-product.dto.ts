@@ -2,31 +2,61 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateProductDto {
-  @ApiProperty({ type: 'string', required: false })
+  @ApiProperty({
+    example: 'เสื้อคอกลมผู้ชายผ้าถัก',
+    required: true,
+    type: 'string',
+  })
   @IsString()
   @IsNotEmpty()
   title: string;
 
-  @ApiProperty({ type: 'string', required: false })
+  @ApiProperty({
+    example:
+      'ทรงเข้ารูป ปลายขาเรียว, ซักนุ่ม, ยืดได้ 2 ทิศทาง และน้ำหนักเบา สวมใส่สบาย',
+    required: true,
+    type: 'string',
+  })
   @IsString()
   @IsNotEmpty()
   description: string;
 
-  @ApiProperty({ type: 'string', required: false })
+  @ApiProperty({
+    example: 'สีฟ้าท๊อปดราย',
+    required: true,
+    type: 'string',
+  })
   @IsString()
   @IsNotEmpty()
   color: string;
 
-  @ApiProperty({ type: 'string', required: false })
+  @ApiProperty({
+    example: '200',
+    required: true,
+    type: 'number',
+  })
   @IsNumber()
   @IsNotEmpty()
   price: number;
 
-  @ApiProperty({ type: 'string', required: false })
+  @ApiProperty({
+    example: '1',
+    required: true,
+    type: 'number',
+  })
   @IsNumber()
   @IsNotEmpty()
-  type: number;
+  product_type: number;
+
+  @ApiProperty({
+    example: '100',
+    required: true,
+    type: 'number',
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  inventory: number;
 
   @ApiProperty({ type: 'string', format: 'binary', required: true })
-  image_file: Express.Multer.File;
+  file: Express.Multer.File;
 }

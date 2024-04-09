@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsDateString,
+  IsDate,
+  // IsDateString,
   IsNotEmpty,
   IsString,
   MaxLength,
@@ -27,10 +28,10 @@ export class CreateUserDto {
   surname: string;
 
   @ApiProperty({
-    example: '2023-11-14T03:39:21.210Z',
+    example: '2023-11-14',
     required: true,
   })
-  @IsDateString()
+  @IsDate()
   @IsNotEmpty()
   birth_date: Date;
 

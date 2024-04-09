@@ -11,6 +11,7 @@ import {
   UploadedFile,
   HttpStatus,
   Res,
+  BadRequestException,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -21,6 +22,7 @@ import * as fs from 'fs';
 import { AuthGuard } from '../../../authentication/src/auth/guards/local.auth-guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Public } from '../../../authentication/src/auth/decorators/public.decorator';
+import { UpdateInventory } from './dto/update-inventory.dto';
 
 @UseGuards(AuthGuard)
 @Controller('product')
@@ -43,11 +45,16 @@ export class ProductController {
     @Body() product: CreateProductDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return {
-      status: 201,
-      message: 'success',
-      result: await this.productService.create(product, file),
-    };
+    try {
+      return {
+        status: 201,
+        message: 'success',
+        result: await this.productService.create(product, file),
+      };
+    } catch (err) {
+      console.log(err);
+      throw new BadRequestException(err);
+    }
   }
 
   @Public()
@@ -140,6 +147,34 @@ export class ProductController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.productService.update(+id, updateProductDto, file);
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'OK.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file', multerOptions))
+  @Patch('/inventory/update/:id')
+  async updateInventory(
+    @Param('id') id: number,
+    @Body() updateData: UpdateInventory,
+  ) {
+    try {
+      const updateInventory = await this.productService.updateInventory(
+        id,
+        updateData,
+      );
+      return {
+        status: 200,
+        message: 'success',
+        result: updateInventory,
+      };
+    } catch (err) {
+      throw new BadRequestException(err);
+    }
   }
 
   @ApiResponse({

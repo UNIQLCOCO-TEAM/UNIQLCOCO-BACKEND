@@ -2,13 +2,14 @@ import {
   Column,
   Entity,
   JoinColumn,
-  ManyToMany,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../../../../authentication/src/user/entities/user.entity';
-import { Delivery } from './delivery.entity';
 import { Payment } from './payment.entity';
+import { Product } from '../../../../products/src/product/entities/product.entity';
+import { Cart } from '../../../../products/src/cart/entities/cart.entity';
 
 @Entity()
 export class Order {
@@ -19,21 +20,23 @@ export class Order {
   @JoinColumn({ name: 'uid' })
   uid: number;
 
-  @ManyToOne(() => User, (User) => User.address, {
-    cascade: true,
-    nullable: true,
-  })
-  @JoinColumn({ name: 'address' })
-  address: number;
+  @Column({ type: 'varchar', name: 'address', nullable: false })
+  address: string;
+
+  @OneToOne(() => Cart, (Cart) => Cart.id, { cascade: true })
+  @JoinColumn({ name: 'cart_id' })
+  cart_id: number;
 
   @Column({ type: 'json', name: 'products', nullable: false })
-  products: number[];
+  products: Product[];
 
-  @ManyToMany(() => Delivery, (Delivery) => Delivery.id, { cascade: true })
-  @JoinColumn({ name: 'delivery_type' })
-  delivery_type: number;
+  @Column({ type: 'int', name: 'delivery_fee', nullable: false })
+  fees: number;
 
-  @ManyToMany(() => Payment, (Payment) => Payment.id, { cascade: true })
+  @Column({ type: 'int', name: 'total_price', nullable: false })
+  total_price: number;
+
+  @ManyToOne(() => Payment, (Payment) => Payment.id, { cascade: true })
   @JoinColumn({ name: 'payment_type' })
   payment_type: number;
 

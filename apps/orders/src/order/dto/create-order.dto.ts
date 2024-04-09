@@ -1,30 +1,41 @@
-import {
-  IsNotEmpty,
-  IsArray,
-  IsPositive,
-  IsInt,
-  IsDateString,
-} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsPositive, IsNumber, IsDate } from 'class-validator';
 
 export class CreateOrderDto {
+  @ApiProperty({
+    name: 'uid',
+    example: '1',
+    required: true,
+  })
+  @IsNumber()
   @IsNotEmpty()
   uid: number;
 
+  @ApiProperty({
+    name: 'cart_id',
+    example: '1',
+    required: true,
+  })
+  @IsNumber()
   @IsNotEmpty()
-  @IsArray()
-  products: number[];
+  cart_id: number;
 
-  @IsNotEmpty()
-  @IsInt()
+  @ApiProperty({
+    name: 'payment_type',
+    example: '1',
+    required: true,
+  })
+  @IsNumber()
   @IsPositive()
-  delivery_type: number;
-
   @IsNotEmpty()
-  @IsInt()
-  @IsPositive()
   payment_type: number;
 
+  @ApiProperty({
+    name: 'time',
+    example: '2024-04-10',
+    required: true,
+  })
   @IsNotEmpty()
-  @IsDateString()
+  @IsDate()
   time: Date;
 }

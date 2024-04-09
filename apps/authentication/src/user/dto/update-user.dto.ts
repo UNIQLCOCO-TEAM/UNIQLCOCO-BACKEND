@@ -23,7 +23,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   surname: string;
 
   @ApiProperty({
-    example: '2023-11-14T03:39:21.210Z',
+    example: '2023-11-14',
     required: true,
   })
   @IsDate()

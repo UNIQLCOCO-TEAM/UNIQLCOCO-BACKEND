@@ -11,13 +11,16 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
     }),
   );
   const ordersOptions = new DocumentBuilder()
-    .setTitle('Product Module.')
-    .setDescription('This is a list of product module.')
+    .setTitle('Order Module.')
+    .setDescription('This is a list of order module.')
     .setVersion('1.0.0')
-    .addTag('products')
     .addBearerAuth()
     .build();
 
@@ -25,7 +28,7 @@ async function bootstrap() {
     include: [OrderModule],
   });
 
-  SwaggerModule.setup('/api/products', app, orderDocument);
+  SwaggerModule.setup('/api/orders', app, orderDocument);
   await app.listen(8082);
 }
 bootstrap();

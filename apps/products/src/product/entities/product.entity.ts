@@ -17,6 +17,9 @@ export class Product {
   @Column({ type: 'int', nullable: false })
   price: number;
 
+  @Column({ type: 'int', name: 'inventory', nullable: false })
+  inventory: number;
+
   @Column({ type: 'int', name: 'type', nullable: false })
   type: number;
 
