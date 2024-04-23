@@ -17,21 +17,29 @@ import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { multerOptions } from './config';
-import { ApiBearerAuth, ApiConsumes, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import * as fs from 'fs';
 import { AuthGuard } from '../../../authentication/src/auth/guards/local.auth-guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Public } from '../../../authentication/src/auth/decorators/public.decorator';
 import { UpdateInventory } from './dto/update-inventory.dto';
+import { Roles } from '../../../authentication/src/auth/decorators/roles.decorator';
+import { Role } from '../../../authentication/src/auth/enum/role.enum';
 
 @UseGuards(AuthGuard)
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @Roles(Role.Admin)
   @ApiResponse({
     status: 201,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({
     status: 403,
@@ -60,12 +68,13 @@ export class ProductController {
   @Public()
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiTags('asset')
   @Get('/asset/:imageName')
-  async getNews(@Param('imageName') imageName: string, @Res() res) {
-    const image = this.productService.findNewsImage(imageName);
+  async getProductImage(@Param('imageName') imageName: string, @Res() res) {
+    const image = this.productService.findProductImage(imageName);
     try {
       // Check if the image file exists
       if (fs.existsSync(image)) {
@@ -87,9 +96,34 @@ export class ProductController {
     }
   }
 
+  @Public()
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiTags('asset')
+  @Get('/sounds/:sound')
+  async getSound(@Param('sound') sound: string, @Res() res) {
+    const sounds = this.productService.findSound(sound);
+    try {
+      if (fs.existsSync(sounds)) {
+        res.setHeader('Content-Type', 'audio/wav');
+        fs.createReadStream(sounds).pipe(res);
+      } else {
+        res.status(HttpStatus.NOT_FOUND).send('Audio not found');
+      }
+    } catch (error) {
+      console.error(error);
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .send('Internal Server Error');
+    }
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiBearerAuth()
@@ -102,27 +136,28 @@ export class ProductController {
     };
   }
 
+  @Public()
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @ApiBearerAuth()
+  @ApiTags('category')
   @Get('/type/:id')
   async findByType(@Param('id') id: string) {
     return {
       status: 200,
       message: 'success',
-      result: await this.productService.findByType(+id),
+      result: await this.productService.findByTypeNonDuplicate(+id),
     };
   }
 
+  @Public()
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @ApiBearerAuth()
   @Get(':id')
   async findByID(@Param('id') id: string) {
     return {
@@ -134,29 +169,32 @@ export class ProductController {
 
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiBearerAuth()
   @Patch(':id')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file', multerOptions))
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.productService.update(+id, updateProductDto, file);
+    return {
+      status: 200,
+      message: 'success',
+      result: await this.productService.update(+id, updateProductDto, file),
+    };
   }
 
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiBearerAuth()
-  @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('file', multerOptions))
+  @ApiTags('category')
   @Patch('/inventory/update/:id')
   async updateInventory(
     @Param('id') id: number,
@@ -179,12 +217,16 @@ export class ProductController {
 
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiBearerAuth()
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return {
+      status: 200,
+      message: 'success',
+      result: await this.productService.remove(+id),
+    };
   }
 }

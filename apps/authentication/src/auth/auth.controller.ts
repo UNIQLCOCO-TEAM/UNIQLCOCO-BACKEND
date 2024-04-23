@@ -12,7 +12,7 @@ import { AuthService } from './auth.service';
 import { CreateAccountWithEmailDto } from './dto/create-auth.dto';
 import { UpdateAccountDto } from './dto/update-auth.dto';
 import { Public } from './decorators/public.decorator';
-import { ApiBearerAuth, ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SignInDto } from './dto/create-signin-dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { Account } from './entities/auth.entity';
@@ -25,18 +25,23 @@ export class AuthController {
 
   @Public()
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'Login success.',
   })
   @ApiBody({
     type: SignInDto,
   })
+  @ApiTags('auth')
   @Post('login')
   async signInWithEmail(@Body() signInDto: SignInDto) {
-    return await this.authService.verifyUser(
-      signInDto.email,
-      signInDto.password,
-    );
+    return {
+      status: 201,
+      message: 'success',
+      result: await this.authService.verifyUser(
+        signInDto.email,
+        signInDto.password,
+      ),
+    };
   }
 
   @Public()
@@ -47,14 +52,19 @@ export class AuthController {
   @ApiBody({
     type: CreateAccountWithEmailDto,
   })
+  @ApiTags('auth')
   @Post('sign-up')
   async signUpWithEmail(@Body() account: CreateAccountWithEmailDto) {
-    return await this.authService.create(account);
+    return {
+      status: 201,
+      message: 'success',
+      result: await this.authService.create(account),
+    };
   }
 
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({
     status: 403,
@@ -73,10 +83,11 @@ export class AuthController {
 
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiBearerAuth()
+  @ApiTags('profile')
   @Get('/myAccount/:uid')
   async findMyAccount(@Param('uid') uid: string) {
     return {
@@ -88,13 +99,14 @@ export class AuthController {
 
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({
     status: 403,
     description: 'Forbidden.',
   })
   @ApiBearerAuth()
+  @ApiTags('profile')
   @Get('/id/:id')
   async findByAccountId(@Param('id') id: string) {
     const account: Account | null = await this.authService.findById(+id);
@@ -110,12 +122,13 @@ export class AuthController {
   @Public()
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({
     status: 403,
     description: 'Forbidden.',
   })
+  @ApiTags('profile')
   @Get('/email/:email')
   async findByEmail(@Param('email') email: string) {
     const account: Account | null = await this.authService.findByEmail(email);
@@ -131,13 +144,14 @@ export class AuthController {
 
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({
     status: 403,
     description: 'Forbidden.',
   })
   @ApiBearerAuth()
+  @ApiTags('profile')
   @Get('/uid/:id')
   async findByUid(@Param('id') id: string) {
     const account: Account | null = await this.authService.findByUid(id);
@@ -224,6 +238,7 @@ export class AuthController {
     description: 'Forbidden.',
   })
   @ApiBearerAuth()
+  @ApiTags('auth')
   @Patch('/update/password/:uid')
   async updatePassword(
     @Body() updatePassword: UpdatePasswordDto,

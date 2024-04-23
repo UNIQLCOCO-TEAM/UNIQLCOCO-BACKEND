@@ -21,6 +21,7 @@ async function bootstrap() {
     .setTitle('Order Module.')
     .setDescription('This is a list of order module.')
     .setVersion('1.0.0')
+    .addTag('dashboard')
     .addBearerAuth()
     .build();
 

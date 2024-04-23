@@ -22,6 +22,8 @@ async function bootstrap() {
     .setTitle('Product Module.')
     .setDescription('This is a list of product module.')
     .setVersion('1.0.0')
+    .addTag('asset')
+    .addTag('category')
     .addBearerAuth()
     .build();
 
@@ -29,6 +31,7 @@ async function bootstrap() {
     .setTitle('Cart Module.')
     .setDescription('This is a list of cart module.')
     .setVersion('1.0.0')
+    .addTag('status')
     .addBearerAuth()
     .build();
 

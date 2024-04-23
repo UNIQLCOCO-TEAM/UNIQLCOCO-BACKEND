@@ -6,7 +6,7 @@ export class CreateCartDto {
   @ApiProperty({
     name: 'status',
     enum: Status,
-    default: Status.ACTIVE,
+    default: Status.INACTIVE,
     required: true,
   })
   @IsEnum(Status)
@@ -24,7 +24,7 @@ export class CreateCartDto {
 
   @ApiProperty({
     name: 'uid',
-    default: 0,
+    default: 1,
     required: true,
   })
   @IsNumber()

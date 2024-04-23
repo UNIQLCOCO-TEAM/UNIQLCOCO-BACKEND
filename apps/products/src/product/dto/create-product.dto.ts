@@ -40,6 +40,15 @@ export class CreateProductDto {
   price: number;
 
   @ApiProperty({
+    example: 'S, M, L, XL',
+    required: true,
+    type: 'string',
+  })
+  @IsString()
+  @IsNotEmpty()
+  size: string;
+
+  @ApiProperty({
     example: '1',
     required: true,
     type: 'number',

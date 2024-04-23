@@ -6,7 +6,6 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from '../../../../authentication/src/user/entities/user.entity';
 import { Payment } from './payment.entity';
 import { Product } from '../../../../products/src/product/entities/product.entity';
 import { Cart } from '../../../../products/src/cart/entities/cart.entity';
@@ -16,8 +15,7 @@ export class Order {
   @PrimaryGeneratedColumn('increment')
   order_id: number;
 
-  @ManyToOne(() => User, (User) => User.uid, { cascade: true })
-  @JoinColumn({ name: 'uid' })
+  @Column({ type: 'int', name: 'uid', nullable: false })
   uid: number;
 
   @Column({ type: 'varchar', name: 'address', nullable: false })

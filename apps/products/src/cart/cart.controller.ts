@@ -12,7 +12,7 @@ import { CartService } from './cart.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { AuthGuard } from '../../../authentication/src/auth/guards/local.auth-guard';
-import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UpdateStatus } from './dto/update-status.dto';
 
 @UseGuards(AuthGuard)
@@ -22,7 +22,7 @@ export class CartController {
 
   @ApiResponse({
     status: 201,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({
     status: 403,
@@ -30,13 +30,17 @@ export class CartController {
   })
   @ApiBearerAuth()
   @Post()
-  create(@Body() createCartDto: CreateCartDto) {
-    return this.cartService.create(createCartDto);
+  async create(@Body() createCartDto: CreateCartDto) {
+    return {
+      status: 201,
+      message: 'success',
+      result: await this.cartService.create(createCartDto),
+    };
   }
 
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({
     status: 403,
@@ -44,13 +48,17 @@ export class CartController {
   })
   @ApiBearerAuth()
   @Get()
-  findAll() {
-    return this.cartService.findAll();
+  async findAll() {
+    return {
+      status: 200,
+      message: 'success',
+      result: await this.cartService.findAll(),
+    };
   }
 
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({
     status: 403,
@@ -58,13 +66,35 @@ export class CartController {
   })
   @ApiBearerAuth()
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.cartService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return {
+      status: 200,
+      message: 'success',
+      result: await this.cartService.findOne(+id),
+    };
   }
 
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden.',
+  })
+  @ApiBearerAuth()
+  @Get('/uid/:id')
+  async findUIDActiveCart(@Param('id') id: string) {
+    return {
+      status: 200,
+      message: 'success',
+      result: await this.cartService.findUIDActiveCart(+id),
+    };
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Success.',
   })
   @ApiResponse({
     status: 403,
@@ -73,29 +103,38 @@ export class CartController {
   @ApiBearerAuth()
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
-    return this.cartService.update(+id, updateCartDto);
+    return {
+      status: 200,
+      message: 'success',
+      result: this.cartService.update(+id, updateCartDto),
+    };
   }
 
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({
     status: 403,
     description: 'Forbidden.',
   })
   @ApiBearerAuth()
+  @ApiTags('status')
   @Patch('/status/:id')
   updateCartStatus(
     @Param('id') id: string,
     @Body() updateStatus: UpdateStatus,
   ) {
-    return this.cartService.updateCartStatus(+id, updateStatus);
+    return {
+      status: 200,
+      message: 'success',
+      result: this.cartService.updateCartStatus(+id, updateStatus),
+    };
   }
 
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({
     status: 403,
@@ -104,6 +143,10 @@ export class CartController {
   @ApiBearerAuth()
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.cartService.remove(+id);
+    return {
+      status: 200,
+      message: 'success',
+      result: this.cartService.remove(+id),
+    };
   }
 }

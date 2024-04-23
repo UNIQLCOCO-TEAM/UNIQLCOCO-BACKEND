@@ -16,6 +16,7 @@ import { User } from '../user/entities/user.entity';
 import { Public } from './decorators/public.decorator';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { AuthGuard } from './guards/local.auth-guard';
+import { Role } from './enum/role.enum';
 
 @UseGuards(AuthGuard)
 @Injectable()
@@ -60,15 +61,13 @@ export class AuthService {
       },
     });
     const isExpired = await this.isAccessTokenExpired(account.access_token);
-    const payload = isExpired
-      ? { sub: account.uid, username: account.email }
-      : {};
+    const payload = isExpired ? { sub: account.uid, email: account.email } : {};
     const token = await this.jwtService.signAsync(payload);
 
     const passwordIsValid = await bcryptjs.compare(password, account.password);
 
     if (!account || !passwordIsValid) {
-      throw new UnauthorizedException('Invalid username or password');
+      throw new UnauthorizedException('Invalid email or password');
     }
 
     if (isExpired) {
@@ -88,6 +87,7 @@ export class AuthService {
       access_token: isExpired ? token : account.access_token,
       last_logged_in: account.last_logged_in,
       uid: user.uid,
+      role: account.role,
     };
   }
 
@@ -167,6 +167,7 @@ export class AuthService {
       account.uid = newAccount.uid;
       account.logged_id_history = [];
       account.last_logged_in = new Date();
+      account.role = Role.User;
 
       const payload = { sub: account.uid, email: account.email };
       account.access_token = await this.jwtService.signAsync(payload);
@@ -201,7 +202,7 @@ export class AuthService {
     const salt = await bcryptjs.genSalt();
     const hashPassword = await bcryptjs.hash(updatePassword.password, salt);
     account.password = hashPassword;
-    const payload = { sub: account.uid, username: account.email };
+    const payload = { sub: account.uid, email: account.email };
 
     account.access_token = await this.jwtService.signAsync(payload);
 

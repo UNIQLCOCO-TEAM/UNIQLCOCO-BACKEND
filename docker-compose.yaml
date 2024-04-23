@@ -46,7 +46,7 @@ services:
     networks:
       - uniqlcoco_network
   database_service:
-    image: uniqlcoco_database:1.0.0
+    image: superpumpkin/uniqlcoco_database:1.0.0
     command: --default-authentication-plugin=caching_sha2_password
     restart: always
     environment:

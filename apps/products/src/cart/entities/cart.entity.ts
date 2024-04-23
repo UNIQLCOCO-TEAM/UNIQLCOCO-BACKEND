@@ -1,13 +1,5 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Status } from '../enum/status.enum';
-// import { Product } from '../../product/entities/product.entity';
-import { User } from '../../../../authentication/src/user/entities/user.entity';
 
 @Entity()
 export class Cart {
@@ -17,7 +9,6 @@ export class Cart {
   @Column({
     type: 'enum',
     enum: Status,
-    default: Status.ACTIVE,
     name: 'status',
     nullable: false,
   })
@@ -36,7 +27,6 @@ export class Cart {
   @Column({ type: 'int', name: 'delivery_fee', nullable: true })
   fees: number;
 
-  @ManyToOne(() => User, (User) => User.uid, { cascade: true })
-  @JoinColumn({ name: 'uid' })
+  @Column({ type: 'int', name: 'uid', nullable: false })
   uid: number;
 }

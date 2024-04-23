@@ -17,6 +17,9 @@ export class Product {
   @Column({ type: 'int', nullable: false })
   price: number;
 
+  @Column({ type: 'varchar', nullable: false })
+  size: string;
+
   @Column({ type: 'int', name: 'inventory', nullable: false })
   inventory: number;
 
@@ -25,4 +28,7 @@ export class Product {
 
   @Column({ type: 'varchar', nullable: false })
   image_file: string;
+
+  @Column({ type: 'varchar', name: 'sound', nullable: true })
+  sound: string;
 }

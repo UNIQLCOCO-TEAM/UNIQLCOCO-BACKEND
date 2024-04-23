@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { Product } from '../product/entities/product.entity';
 import { User } from '../../../authentication/src/user/entities/user.entity';
 import { UpdateStatus } from './dto/update-status.dto';
+import { Status } from './enum/status.enum';
 
 @Injectable()
 export class CartService {
@@ -38,15 +39,29 @@ export class CartService {
     cart.fees = productLists.length < 5 ? 80 : 0;
     cart.uid = createCartDto.uid;
 
-    return this.cartRepository.save(cart);
+    return await this.cartRepository.save(cart);
   }
 
   findAll() {
     return this.cartRepository.find();
   }
 
-  findOne(id: number) {
-    return this.cartRepository.findOne({ where: { id: id } });
+  async findOne(id: number) {
+    return await this.cartRepository.findOne({
+      where: { id: id },
+    });
+  }
+
+  async findUIDActiveCart(id: number) {
+    // if (updateStatus.status == Status.ACTIVE) console.log(true);
+    // return await this.cartRepository.find({
+    //   where: {
+    //     status: updateStatus.status,
+    //   },
+    // });
+    return await this.cartRepository.findOne({
+      where: { uid: id, status: Status.ACTIVE },
+    });
   }
 
   async update(id: number, updateCartDto: UpdateCartDto) {

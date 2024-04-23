@@ -22,7 +22,7 @@ async function bootstrap() {
     .setTitle('User Module.')
     .setDescription('This is a list of user module.')
     .setVersion('1.0.0')
-    .addTag('User')
+    .addTag('phone')
     .addBearerAuth()
     .build();
 
@@ -30,7 +30,8 @@ async function bootstrap() {
     .setTitle('Account Module.')
     .setDescription('This is a list of account module.')
     .setVersion('1.0.0')
-    .addTag('Account')
+    .addTag('auth')
+    .addTag('profile')
     .addBearerAuth()
     .build();
 

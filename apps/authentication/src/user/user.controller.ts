@@ -11,7 +11,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { ApiBearerAuth, ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/guards/local.auth-guard';
 import { Public } from '../auth/decorators/public.decorator';
@@ -23,7 +23,7 @@ export class UserController {
 
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiBearerAuth()
@@ -40,10 +40,11 @@ export class UserController {
   @Public()
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiBearerAuth()
+  @ApiTags('phone')
   @Get('/phone/:phone')
   async findByPhone(@Param('phone') phone: string) {
     const user: User | null = await this.userService.findByPhoneNumber(phone);
@@ -59,7 +60,7 @@ export class UserController {
 
   @ApiResponse({
     status: 200,
-    description: 'OK.',
+    description: 'Success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @ApiBearerAuth()
@@ -78,6 +79,7 @@ export class UserController {
               surname: user.surname,
               birth_date: user.birth_date,
               phone_number: user.phone_number,
+              address: user.address,
             }
           : [],
     });
@@ -95,7 +97,11 @@ export class UserController {
   })
   @Post('/profile/create')
   async createProfile(@Body() createUserDto: CreateUserDto) {
-    return await this.userService.createUserProfile(createUserDto);
+    return {
+      status: 200,
+      message: 'success',
+      result: await this.userService.createUserProfile(createUserDto),
+    };
   }
 
   @ApiResponse({

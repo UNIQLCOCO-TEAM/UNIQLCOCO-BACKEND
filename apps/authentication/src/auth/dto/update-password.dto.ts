@@ -11,12 +11,12 @@ const passwordRegEx =
 
 export class UpdatePasswordDto {
   @ApiProperty({
-    example: 'dev',
+    example: 'dev@local.com',
     required: true,
   })
   @IsNotEmpty()
-  @MinLength(5, { message: 'Username must has at least 5 characters.' })
-  username: string;
+  @MinLength(5, { message: 'email must has at least 5 characters.' })
+  email: string;
 
   @ApiProperty({
     example: 'P@ssw0rd',
