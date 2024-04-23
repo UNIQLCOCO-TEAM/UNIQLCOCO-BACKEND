@@ -6,6 +6,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
+import { Role } from '../enum/role.enum';
 
 @Entity()
 export class Account {
@@ -30,4 +31,7 @@ export class Account {
 
   @Column({ type: 'varchar' })
   access_token: string;
+
+  @Column({ type: 'enum', enum: Role, name: 'role', nullable: false })
+  role: Role;
 }
