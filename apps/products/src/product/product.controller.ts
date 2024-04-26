@@ -229,4 +229,20 @@ export class ProductController {
       result: await this.productService.remove(+id),
     };
   }
+
+  @Public()
+  @ApiResponse({
+    status: 200,
+    description: 'Success.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiTags('dashboard')
+  @Post('/nonDuplicate')
+  async findAllProductNotDuplicate() {
+    return {
+      status: 200,
+      message: 'success',
+      result: await this.productService.findAllProductNotDuplicate(),
+    };
+  }
 }

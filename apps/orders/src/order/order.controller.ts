@@ -203,4 +203,23 @@ export class OrderController {
       result: await this.orderService.getPopularProduct(),
     };
   }
+
+  @Public()
+  @ApiResponse({
+    status: 201,
+    description: 'Success.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden.',
+  })
+  @ApiTags('dashboard')
+  @Post('/topSellerForDashboard')
+  async getTopSellerForDashboard() {
+    return {
+      status: 200,
+      message: 'success',
+      result: await this.orderService.getTopSellerForDashboard(),
+    };
+  }
 }

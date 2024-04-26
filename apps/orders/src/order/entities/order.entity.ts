@@ -3,12 +3,10 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Payment } from './payment.entity';
 import { Product } from '../../../../products/src/product/entities/product.entity';
-import { Cart } from '../../../../products/src/cart/entities/cart.entity';
 
 @Entity()
 export class Order {
@@ -21,8 +19,7 @@ export class Order {
   @Column({ type: 'varchar', name: 'address', nullable: false })
   address: string;
 
-  @OneToOne(() => Cart, (Cart) => Cart.id, { cascade: true })
-  @JoinColumn({ name: 'cart_id' })
+  @Column({ type: 'int', name: 'cart_id', nullable: false })
   cart_id: number;
 
   @Column({ type: 'json', name: 'products', nullable: false })

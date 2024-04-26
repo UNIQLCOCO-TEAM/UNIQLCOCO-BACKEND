@@ -21,6 +21,7 @@ export class Account {
 
   @OneToOne(() => User, (User) => User.uid, { cascade: true })
   @JoinColumn({ name: 'uid' })
+  @Column({ type: 'int', name: 'uid', nullable: false })
   uid: number;
 
   @Column({ type: 'timestamp' })

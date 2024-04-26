@@ -233,4 +233,39 @@ export class ProductService {
     await this.productRepository.delete(id);
     return product;
   }
+
+  async findAllProductNotDuplicate() {
+    const products: Product[] = await this.productRepository.find();
+    const nonDuplicateProducts = {};
+
+    products.forEach((product) => {
+      const newProductFormat = {
+        id: product.id,
+        name: product.title,
+        description: product.description,
+        price: product.price,
+        type: product.type === 1 ? 'shirt' : 'pants',
+        color: product.color,
+        path: product.image_file,
+        inventory: {
+          [product.size]: product.inventory,
+        },
+        sound: product.sound,
+      };
+
+      if (!nonDuplicateProducts[product.title]) {
+        nonDuplicateProducts[product.title] = newProductFormat;
+      } else {
+        nonDuplicateProducts[product.title].inventory = {
+          ...nonDuplicateProducts[product.title].inventory,
+          [product.size]: product.inventory,
+        };
+      }
+    });
+
+    // Convert object values to an array
+    const nonDuplicateProductsArray = Object.values(nonDuplicateProducts);
+
+    return nonDuplicateProductsArray;
+  }
 }
