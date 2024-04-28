@@ -30,6 +30,8 @@ import { Public } from '../../../authentication/src/auth/decorators/public.decor
 import { UpdateInventory } from './dto/update-inventory.dto';
 import { Roles } from '../../../authentication/src/auth/decorators/roles.decorator';
 import { Role } from '../../../authentication/src/auth/enum/role.enum';
+import { UpdateDuplicateProduct } from './dto/update-duplicatie-product.dto';
+import { CreateDuplicateProduct } from './dto/create-duplicate-product.dto';
 
 @UseGuards(AuthGuard)
 @Controller('product')
@@ -227,6 +229,110 @@ export class ProductController {
       status: 200,
       message: 'success',
       result: await this.productService.remove(+id),
+    };
+  }
+
+  @Public()
+  @ApiResponse({
+    status: 200,
+    description: 'Success.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiTags('dashboard')
+  @Post('/nonDuplicate')
+  async findAllProductNotDuplicate() {
+    return {
+      status: 200,
+      message: 'success',
+      result: await this.productService.findAllProductNotDuplicate(),
+    };
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Success.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiBearerAuth()
+  @ApiTags('category')
+  @Patch('/setUpdate/:id')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file', multerOptions))
+  async updateDuplicateProduct(
+    @Param('id') id: string,
+    @Body() updateDuplicateProduct: UpdateDuplicateProduct,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return {
+      status: 200,
+      message: 'success',
+      result: await this.productService.updateDuplicateProduct(
+        +id,
+        updateDuplicateProduct,
+        file,
+      ),
+    };
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Success.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiTags('category')
+  @ApiBearerAuth()
+  @Patch('/setUpdateOnlyData/:id')
+  async updateOnlyData(
+    @Param('id') id: string,
+    @Body() updateDuplicateProduct: UpdateDuplicateProduct,
+  ) {
+    return {
+      status: 200,
+      message: 'success',
+      result: await this.productService.updateOnlyData(
+        +id,
+        updateDuplicateProduct,
+      ),
+    };
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Success.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiBearerAuth()
+  @ApiTags('category')
+  @Post('/createSetOfProduct')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file', multerOptions))
+  async createSetOfProduct(
+    @Body() createDuplicateProductDto: CreateDuplicateProduct,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return {
+      status: 200,
+      message: 'success',
+      result: await this.productService.createSetOfProduct(
+        createDuplicateProductDto,
+        file,
+      ),
+    };
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'Success.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiBearerAuth()
+  @ApiTags('category')
+  @Delete('/deleteSetOfProduct/:id')
+  async removeSetOfProduct(@Param('id') id: string) {
+    return {
+      status: 200,
+      message: 'success',
+      result: await this.productService.removeSetOfProduct(+id),
     };
   }
 }

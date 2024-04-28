@@ -53,12 +53,6 @@ export class CartService {
   }
 
   async findUIDActiveCart(id: number) {
-    // if (updateStatus.status == Status.ACTIVE) console.log(true);
-    // return await this.cartRepository.find({
-    //   where: {
-    //     status: updateStatus.status,
-    //   },
-    // });
     return await this.cartRepository.findOne({
       where: { uid: id, status: Status.ACTIVE },
     });

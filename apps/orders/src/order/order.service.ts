@@ -8,6 +8,7 @@ import { User } from '../../../authentication/src/user/entities/user.entity';
 import { Cart } from '../../../products/src/cart/entities/cart.entity';
 import { Product } from '../../../products/src/product/entities/product.entity';
 import { Status } from '../../../products/src/cart/enum/status.enum';
+import { Payment } from './entities/payment.entity';
 
 @Injectable()
 export class OrderService {
@@ -20,6 +21,8 @@ export class OrderService {
     private readonly cartRepository: Repository<Cart>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(Payment)
+    private readonly paymentRepository: Repository<Payment>,
   ) {}
   async create(createOrderDto: CreateOrderDto) {
     const user: User = await this.userRepository.findOne({
@@ -135,7 +138,6 @@ export class OrderService {
       (a, b) => b[1] - a[1],
     );
     const newProductsMap = new Map(entries);
-    console.log(newProductsMap);
     // eslint-disable-next-line prefer-const
     let topProductSeller = [];
     await Promise.all(
@@ -145,7 +147,6 @@ export class OrderService {
             id: key,
           },
         });
-        console.log(product);
         topProductSeller.push({
           ...product,
           total: val * product.price,
@@ -166,7 +167,10 @@ export class OrderService {
         productsMap.set(id, count + 1);
       });
     });
-    return { shirt: productsMap.get(1), pants: productsMap.get(2) };
+    return {
+      shirts: productsMap.get(1),
+      pants: productsMap.get(2) ?? 0,
+    };
   }
 
   async findEndDate(month: number) {
@@ -240,5 +244,91 @@ export class OrderService {
   async getPopularProduct() {
     const topSeller = await this.getTopSeller();
     return topSeller.slice(0, 3);
+  }
+
+  async getTodayProductOrder(name: string): Promise<number> {
+    const month = new Date().getMonth();
+    const today = new Date().getDate();
+    const orders: Order[] = await this.orderRepository.find({
+      where: {
+        time: Between(
+          new Date(new Date().getFullYear(), month, today, 0, 0, 0, 0),
+          new Date(new Date().getFullYear(), month, today, 23, 59, 59, 59),
+        ),
+      },
+    });
+    let totalPrice = 0;
+    orders.forEach((order) => {
+      order.products.forEach((product) => {
+        if (product.title === name) {
+          totalPrice += product.price;
+        }
+      });
+    });
+    return totalPrice;
+  }
+
+  async getTotalProductOrder(name: string): Promise<number> {
+    const orders: Order[] = await this.orderRepository.find();
+    let totalPrice = 0;
+    orders.forEach((order) => {
+      order.products.forEach((product) => {
+        if (product.title === name) {
+          totalPrice += product.price;
+        }
+      });
+    });
+    return totalPrice;
+  }
+
+  async getTopSellerForDashboard() {
+    const topSeller = (await this.getTopSeller()).slice(0, 3);
+    const products: Product[] = await this.productRepository.find();
+
+    const todayOrdersPromises = topSeller.map((product) =>
+      this.getTodayProductOrder(product.title),
+    );
+    const todayOrders = await Promise.all(todayOrdersPromises);
+
+    const totalOrdersPromises = topSeller.map((product) =>
+      this.getTotalProductOrder(product.title),
+    );
+    const totalOrders = await Promise.all(totalOrdersPromises);
+
+    const nonDuplicateTopSeller = {};
+
+    topSeller.forEach((product, index) => {
+      const newProductFormat = {
+        id: product.id,
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        size: product.size,
+        type: product.type === 1 ? 'shirt' : 'pants',
+        color: product.color,
+        image_file: product.image_file,
+        inventory: {},
+        sound: product.sound,
+        todayOrders: todayOrders[index],
+        totalOrders: totalOrders[index],
+      };
+
+      products.forEach((pdt: Product) => {
+        if (pdt.title === product.title) {
+          newProductFormat.inventory[pdt.size] = pdt.inventory;
+        }
+      });
+
+      nonDuplicateTopSeller[product.title] = newProductFormat;
+    });
+
+    return Object.values(nonDuplicateTopSeller);
+  }
+
+  async createCashPayment() {
+    const payment: Payment = new Payment();
+    payment.id = 1;
+    payment.name = 'cash';
+    return await this.paymentRepository.save(payment);
   }
 }
