@@ -8,6 +8,7 @@ import { User } from '../../../authentication/src/user/entities/user.entity';
 import { Cart } from '../../../products/src/cart/entities/cart.entity';
 import { Product } from '../../../products/src/product/entities/product.entity';
 import { Status } from '../../../products/src/cart/enum/status.enum';
+import { Payment } from './entities/payment.entity';
 
 @Injectable()
 export class OrderService {
@@ -20,6 +21,8 @@ export class OrderService {
     private readonly cartRepository: Repository<Cart>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(Payment)
+    private readonly paymentRepository: Repository<Payment>,
   ) {}
   async create(createOrderDto: CreateOrderDto) {
     const user: User = await this.userRepository.findOne({
@@ -320,5 +323,12 @@ export class OrderService {
     });
 
     return Object.values(nonDuplicateTopSeller);
+  }
+
+  async createCashPayment() {
+    const payment: Payment = new Payment();
+    payment.id = 1;
+    payment.name = 'cash';
+    return await this.paymentRepository.save(payment);
   }
 }

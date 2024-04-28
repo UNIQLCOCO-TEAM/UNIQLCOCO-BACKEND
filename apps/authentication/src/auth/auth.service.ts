@@ -188,6 +188,53 @@ export class AuthService {
     }
   }
 
+  @Public()
+  async createAdmin(
+    newAccount: CreateAccountWithEmailDto,
+  ): Promise<
+    | { statusCode: number; id: number; email: string; access_token: string }
+    | { statusCode: number; message: string }
+  > {
+    const existingUser = await this.findByEmail(newAccount.email);
+
+    if (existingUser) {
+      return {
+        statusCode: 400,
+        message: 'Email already exists.',
+      };
+    }
+
+    try {
+      const salt = await bcryptjs.genSalt();
+      const hashPassword = await bcryptjs.hash(newAccount.password, salt);
+
+      const account: Account = new Account();
+      account.email = newAccount.email;
+      account.password = hashPassword;
+      account.uid = newAccount.uid;
+      account.logged_id_history = [];
+      account.last_logged_in = new Date();
+      account.role = Role.Admin;
+
+      const payload = { sub: account.uid, email: account.email };
+      account.access_token = await this.jwtService.signAsync(payload);
+
+      await this.accountRepository.save(account);
+
+      return {
+        statusCode: 201,
+        id: account.account_id,
+        email: account.email,
+        access_token: account.access_token,
+      };
+    } catch (err) {
+      return {
+        statusCode: 500,
+        message: err,
+      };
+    }
+  }
+
   async updatePassword(updatePassword: UpdatePasswordDto, uid: string) {
     const account = await this.findByUid(uid);
     console.log(account);

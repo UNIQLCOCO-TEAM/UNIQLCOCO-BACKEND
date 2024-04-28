@@ -62,6 +62,24 @@ export class AuthController {
     };
   }
 
+  @Public()
+  @ApiResponse({
+    status: 201,
+    description: 'This account has been successfully created.',
+  })
+  @ApiBody({
+    type: CreateAccountWithEmailDto,
+  })
+  @ApiTags('auth')
+  @Post('/admin/sign-up')
+  async signUpAdmin(@Body() account: CreateAccountWithEmailDto) {
+    return {
+      status: 201,
+      message: 'success',
+      result: await this.authService.createAdmin(account),
+    };
+  }
+
   @ApiResponse({
     status: 200,
     description: 'Success.',
@@ -245,5 +263,22 @@ export class AuthController {
     @Param('uid') uid: string,
   ) {
     return await this.authService.updatePassword(updatePassword, uid);
+  }
+
+  @Public()
+  @ApiResponse({
+    status: 200,
+    description: 'Access Token is expired.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden.',
+  })
+  @ApiTags('isExpired')
+  @Get('/isExpired/:accessToken')
+  async isAccessTokenExpired(@Param('accessToken') accessToken: string) {
+    return {
+      result: await this.authService.isAccessTokenExpired(accessToken),
+    };
   }
 }
