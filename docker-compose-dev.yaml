@@ -1,7 +1,10 @@
 version: '3.8'
 services:
   auth_service:
-    image: superpumpkin/uniqlcoco_service:1.1.0
+    build:
+      context: .
+      dockerfile: './apps/authentication/Dockerfile'
+      target: development
     command: ['npm', 'run', 'start:dev', 'authentication']
     container_name: uniqlcoco_authentication_service
     env_file:
@@ -13,7 +16,10 @@ services:
     networks:
       - uniqlcoco_network
   products_service:
-    image: superpumpkin/uniqlcoco_service:1.1.0
+    build:
+      context: .
+      dockerfile: './apps/products/Dockerfile'
+      target: development
     command: ['npm', 'run', 'start:dev', 'products']
     container_name: uniqlcoco_products_service
     env_file:
@@ -25,7 +31,10 @@ services:
     networks:
       - uniqlcoco_network
   orders_service:
-    image: superpumpkin/uniqlcoco_service:1.1.0
+    build:
+      context: .
+      dockerfile: './apps/orders/Dockerfile'
+      target: development
     command: ['npm', 'run', 'start:dev', 'orders']
     container_name: uniqlcoco_orders_service
     env_file:
